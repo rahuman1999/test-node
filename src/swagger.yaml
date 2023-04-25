@@ -1,0 +1,211 @@
+openapi: 3.0.0
+info: 
+      title: Swagger
+      version: 1.0.0
+servers:
+      - url: http://localhost:8088
+tags:
+   - name: User
+     description: User List
+paths:
+  /user:
+    get:
+      tags:
+        - User
+      summary: User Detail
+      description: List All Users
+      responses:
+        '200':
+           description: Successful operation
+           content:
+             application/json:
+               schema:
+                  $ref: '#/components/schemas/GetAllUsers'
+        '404':
+          description: Not found
+                  
+    post:
+     tags:
+      - User
+     summary: Create User
+     description: Add User
+     requestBody:
+        description: Create User Data
+        content: 
+          application/json:
+           schema:
+             $ref: '#/components/schemas/GetUser'
+           examples:
+                Register:
+                  $ref: '#/components/example/CreateUser' 
+        required: true
+     responses:
+        '200':
+           description: Successful operation
+           content:
+             application/json:
+               schema:
+                  $ref: '#/components/schemas/GetUser'  
+               examples:
+                 Register:
+                  $ref: '#/components/example/CreateUser'  
+                 Register2:
+                  $ref: '#/components/example/CreateUser'    
+        '405':
+          description: Invalid input
+        '404':
+          description: Not found
+  /user/{id}:
+    get:
+      tags: 
+       - User
+      summary: Get Specific User
+      description: Get User Based On Params Id
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: 
+            type: integer
+            example: 3
+      responses:
+        '200':
+          description: Successful operation
+          content:
+             application/json:
+               schema:
+                  $ref: '#/components/schemas/GetUser' 
+               examples:
+                 Register:
+                  $ref: '#/components/example/GetUser'  
+                 Register2:
+                  $ref: '#/components/example/GetUser'     
+        '405':
+          description: Invalid Params
+        '404':
+          description: Not found
+    put:
+     tags:
+      - User
+     summary: Update User
+     description: Update User
+     parameters:
+        - in: path
+          name: id
+          required: true
+          schema: 
+            type: integer
+            example: 5
+     requestBody:
+        description: Update User Data
+        content: 
+          application/json:
+           schema:
+             $ref: '#/components/schemas/GetUser'
+           examples:
+                Register:
+                  $ref: '#/components/example/CreateUser' 
+        required: true
+     responses:
+        '200':
+           description: Successful operation
+           content:
+             application/json:
+               schema:
+                  $ref: '#/components/schemas/GetUser'  
+               examples:
+                 Register:
+                  $ref: '#/components/example/CreateUser'  
+                 Register2:
+                  $ref: '#/components/example/CreateUser'    
+        '405':
+          description: Invalid input
+        '404':
+          description: Not found
+    delete:
+     tags:
+      - User
+     summary: Update User
+     description: Update User
+     parameters:
+        - in: path
+          name: id
+          required: true
+          schema: 
+            type: integer
+            example: 5
+     responses:
+        '200':
+           description: Successful operation
+           content:
+             application/json:
+               schema:
+                  $ref: '#/components/schemas/GetUser'  
+               examples:
+                 Register:
+                  $ref: '#/components/example/DeleteUser'  
+                 Register2:
+                  $ref: '#/components/example/DeleteUser'    
+        '405':
+          description: Invalid input
+        '404':
+          description: Not found
+                  
+components:
+  schemas:
+    GetAllUsers:
+        allOf:
+         - type: object
+           properties: 
+            user_id:
+              type: integer
+            first_name:
+              type: string
+            last_name:
+              type: string
+        example:
+           - user_id: 3
+             first_name: Rahman
+             last_name: M
+           - user_id: 4
+             first_name: karthick
+             last_name: P
+    GetUser:
+      type: object
+      properties: 
+        first_name:
+          type: string
+        last_name:
+          type: string
+        password:
+           type: string
+        email:
+           type: string
+        confirmpsw:
+           type: string
+      example:
+         first_name: Rahman
+         last_name: M
+         password: Rahman123
+         confirmpsw: Rahman123
+         email: rahman@gmail.com
+  example:
+    GetUser:
+      value:
+        first_name: Rahman
+        last_name: M
+        password: Rahman123
+        confirmpsw: Rahman123
+        email: rahman@gmail.com
+    
+    CreateUser:
+      value:
+        first_name: Rahman
+        last_name: M
+        password: Rahman123
+        confirmpsw: Rahman123
+        email: rahman@gmail.com
+
+    DeleteUser:
+      value:
+         message: User deleted successfully!
