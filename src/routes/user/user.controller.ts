@@ -10,6 +10,54 @@ import nodemailer from "nodemailer";
 const client = createClient();
 
 
+export const getUserList = async (req: Request, res: Response) => {
+  try {
+    client.on("error", (err) => console.log("redis err", err));
+    client.connect();
+    const key = "userlist";
+    const Cachedata = await client.get(key);
+    if (Cachedata) {
+      console.log("Cache Hit");
+      return Utility.successRes(
+        res,
+        200,
+        JSON.parse(Cachedata),
+        "User list fetched successfully!"
+      );
+    } else {
+      const bodyData = req.query;
+      const page: number =
+        bodyData && bodyData.page && Number(bodyData.page)
+          ? Number(bodyData.page)
+          : 1;
+      const limit: number =
+        bodyData && bodyData.limit && Number(bodyData.limit)
+          ? Number(bodyData.limit)
+          : Constants.PAGE_LIMIT;
+      const search: string =
+        bodyData && bodyData.search && String(bodyData.search)
+          ? String(bodyData.search)
+          : "";
+
+      const userList = await service.getUserList(page, limit, search);
+      if (!userList || userList.length < 1) {
+        return Utility.errorRes(res, 400, null, "No user found.");
+      }
+      client.set(key, JSON.stringify(userList));
+      console.log("cache Miss");
+      return Utility.successRes(
+        res,
+        200,
+        userList,
+        "User list fetched successfully!"
+      );
+    }
+  } catch (error) {
+    return Utility.errorRes(res, 400, error);
+  }
+};
+
+
 
 export const profileUpload = async (req: Request, res: Response) => {
   try {

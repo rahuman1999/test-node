@@ -13,6 +13,33 @@ export const profileUpload = async (userData: User) => {
   }
 };
 
+export const getUserList = async (
+  page: number,
+  limit: number,
+  search: string
+) => {
+  try {
+    const offset = (page - 1) * limit;
+    const userList = await User.findAll({
+      where: {
+        [Op.or]: [
+          {
+            first_name: {
+              [Op.substring]: search,
+            },
+          }
+        ],
+      },
+      attributes: [["id", "user_id"], "first_name", "last_name"],
+      offset: offset,
+      limit: limit,
+    });
+    return userList;
+  } catch (error) {
+    throw error;
+  }
+};
+
 
 export const checkEmail = async (email: string) => {
   try {
