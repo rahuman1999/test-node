@@ -12,19 +12,7 @@ const client = createClient();
 
 export const getUserList = async (req: Request, res: Response) => {
   try {
-    client.on("error", (err) => console.log("redis err", err));
-    client.connect();
-    const key = "userlist";
-    const Cachedata = await client.get(key);
-    if (Cachedata) {
-      console.log("Cache Hit");
-      return Utility.successRes(
-        res,
-        200,
-        JSON.parse(Cachedata),
-        "User list fetched successfully!"
-      );
-    } else {
+    console.log("auth data",req.query["user_data"])
       const bodyData = req.query;
       const page: number =
         bodyData && bodyData.page && Number(bodyData.page)
@@ -43,14 +31,39 @@ export const getUserList = async (req: Request, res: Response) => {
       if (!userList || userList.length < 1) {
         return Utility.errorRes(res, 400, null, "No user found.");
       }
-      client.set(key, JSON.stringify(userList));
-      console.log("cache Miss");
       return Utility.successRes(
         res,
         200,
         userList,
         "User list fetched successfully!"
       );
+  } catch (error) {
+    return Utility.errorRes(res, 400, error);
+  }
+};
+
+
+
+export const signIn = async (req: Request, res: Response) => {
+  try {
+    const user = await service.signIn(req.body.email);
+    if (user) {
+      const validUser = await Utility.compareData(
+        req.body.password,
+        user.password
+      );
+      if (validUser) {
+        const userToken = Utility.tokenData(
+          user.email,
+          user.id,
+          user.first_name
+        );
+        return Utility.successRes(res, 200, userToken, "Login successfully!");
+      } else {
+        return Utility.errorRes(res, 400, null, "Invalid Password");
+      }
+    } else {
+      return Utility.errorRes(res, 400, null, "User does not exist.");
     }
   } catch (error) {
     return Utility.errorRes(res, 400, error);
@@ -59,7 +72,7 @@ export const getUserList = async (req: Request, res: Response) => {
 
 
 
-export const profileUpload = async (req: Request, res: Response) => {
+export const signUp = async (req: Request, res: Response) => {
   try {
     const email= await service.checkEmail(req.body.email);
     if(email){ 
@@ -88,7 +101,7 @@ export const profileUpload = async (req: Request, res: Response) => {
     console.log('Error occured while trying to upload to S3 bucket', err);
   }
   if(data){
-    const createdData = await service.profileUpload(bodyData);
+    const createdData = await service.signUp(bodyData);
     if (!createdData) {
       return Utility.errorRes(res, 400, null, "User Added Failed.");
     }

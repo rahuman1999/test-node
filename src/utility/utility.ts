@@ -79,7 +79,6 @@ class Utility {
       } else if (!verifiedtoken) {
         return errorRes(res, 400, null, "Token invalid.");
       }
-      console.log("verifiedtoken - ", verifiedtoken);
 
       req.query["user_data"] = verifiedtoken;
       next();

@@ -3,8 +3,19 @@ import User from "./user.model";
 import { Op } from "sequelize";
 
 
+export const signIn = async (email: string) => {
+  try {
+    const userData = await User.findOne({
+      where: { email: email },
+    });
+    return userData;
+  } catch (error) {
+    throw error;
+  }
+};
 
-export const profileUpload = async (userData: User) => {
+
+export const signUp = async (userData: User) => {
   try {
     const createdData = await User.create(userData);
     return createdData;
@@ -27,10 +38,15 @@ export const getUserList = async (
             first_name: {
               [Op.substring]: search,
             },
-          }
+          },
+          {
+            email: {
+              [Op.substring]: search,
+            },
+          },
         ],
       },
-      attributes: [["id", "user_id"], "first_name", "last_name"],
+      attributes: [["id", "user_id"], "first_name","email","profile"],
       offset: offset,
       limit: limit,
     });

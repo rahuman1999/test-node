@@ -77,6 +77,7 @@
     "sequelize-transparent-cache": "^2.3.0",
     "sequelize-transparent-cache-ioredis": "^2.3.0",
     "sequelize-use-cache": "^2.0.1",
+    "socket.io": "^4.6.1",
     "swagger-jsdoc": "^6.2.4",
     "swagger-ui-express": "^4.5.0",
     "web3": "^1.8.0",

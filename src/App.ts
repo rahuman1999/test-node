@@ -13,11 +13,11 @@ import swaggerUi from "swagger-ui-express";
 import YAML from "yamljs";
 import path from "path";
 import multer from "multer";
-
+import http from "http";
 
 class App {
   public express;
-  public swaggerDocument; 
+  public swaggerDocument;
   public storage;
   constructor() {
     this.express = express();
@@ -32,8 +32,6 @@ class App {
     });
     this.init();
   }
-
-   
 
   async init() {
     try {
@@ -61,7 +59,7 @@ class App {
       this.express.use(
         cors({
           origin: process.env.WEB_URL,
-        }) 
+        })
       );
       this.express.use(morgan("dev"));
       this.express.use(express.json());
@@ -73,15 +71,19 @@ class App {
         swaggerUi.serve,
         swaggerUi.setup(this.swaggerDocument)
       );
-      this.express.use(multer({ storage:this.storage }).single("image"));
+      this.express.use(
+        "/Images",
+        express.static(path.join(__dirname, "Images"))
+      );
+      this.express.use(multer({ storage: this.storage }).single("image"));
     } catch (error) {
       console.log("middleware error - ", error);
     }
   }
 
+
   addRoutes(): void {
     try {
-
       for (let i = 0; i < routes.length; i++) {
         const route = routes[i];
         this.express.use("/", route);
